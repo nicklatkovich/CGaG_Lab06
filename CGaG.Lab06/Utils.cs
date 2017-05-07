@@ -5,11 +5,11 @@ using System;
 namespace CGaG.Lab06 {
     public static class Utils {
 
-        public static Tuple<VertexPositionColor[ ] /*vertexList*/, short[ ] /*indices*/> BuildFunction(Func<float, float, float> f, Vector2 xRange, Vector2 yRange, Vector2 delta) {
+        public static Tuple<VertexPositionColor[ ] /*vertexList*/, short[ ] /*indices*/> BuildFunction(Func<float, float, float> f, Vector2 xRange, Vector2 yRange, Vector2 delta, bool faces = false) {
             int xx = (int)Math.Ceiling((xRange.Y - xRange.X) / delta.X);
             int yy = (int)Math.Ceiling((yRange.Y - yRange.X) / delta.Y);
             VertexPositionColor[ ] vertexList = new VertexPositionColor[(xx + 1) * (yy + 1)];
-            short[ ] indices = new short[4 * (xx + 1) * (yy + 1)];
+            short[ ] indices = new short[(faces ? 6 : 4) * (xx + 1) * (yy + 1)];
             int indice = 0;
             for (int i = 0; i <= xx; i++) {
                 for (int j = 0; j <= yy; j++) {
@@ -17,26 +17,37 @@ namespace CGaG.Lab06 {
                     float y = yRange.X + j * delta.Y;
                     float h = f(x, y);
                     vertexList[i * (yy + 1) + j] = new VertexPositionColor(new Vector3(x, h, y), HSVToColor(h * 60f, 1f, 1f));
-                    if (i > 0) {
-                        indices[indice++] = (short)(i * (yy + 1) + j);
-                        indices[indice++] = (short)((i - 1) * (yy + 1) + j);
-                    }
-                    if (j > 0) {
-                        indices[indice++] = (short)(i * (yy + 1) + j);
-                        indices[indice++] = (short)(i * (yy + 1) + j - 1);
+                    if (faces) {
+                        if (i > 0 && j > 0) {
+                            indices[indice++] = (short)(i * (yy + 1) + j);
+                            indices[indice++] = (short)((i - 1) * (yy + 1) + j);
+                            indices[indice++] = (short)(i * (yy + 1) + j - 1);
+                            indices[indice++] = (short)((i - 1) * (yy + 1) + j);
+                            indices[indice++] = (short)(i * (yy + 1) + j - 1);
+                            indices[indice++] = (short)((i - 1) * (yy + 1) + j - 1);
+                        }
+                    } else {
+                        if (i > 0) {
+                            indices[indice++] = (short)(i * (yy + 1) + j);
+                            indices[indice++] = (short)((i - 1) * (yy + 1) + j);
+                        }
+                        if (j > 0) {
+                            indices[indice++] = (short)(i * (yy + 1) + j);
+                            indices[indice++] = (short)(i * (yy + 1) + j - 1);
+                        }
                     }
                 }
             }
             return new Tuple<VertexPositionColor[ ], short[ ]>(vertexList, indices);
         }
 
-        public static void DrawLineList(this Game thread, VertexPositionColor[ ] vertexList, short[ ] indices) {
+        public static void DrawList(this Game thread, VertexPositionColor[ ] vertexList, short[ ] indices, PrimitiveType type) {
 
             VertexBuffer vertexBuffer = new VertexBuffer(thread.GraphicsDevice, typeof(VertexPositionColor), vertexList.Length, BufferUsage.WriteOnly);
             vertexBuffer.SetData(vertexList);
             thread.GraphicsDevice.SetVertexBuffer(vertexBuffer);
 
-            thread.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.LineList, vertexList, 0, vertexList.Length, indices, 0, indices.Length / 2);
+            thread.GraphicsDevice.DrawUserIndexedPrimitives(type, vertexList, 0, vertexList.Length, indices, 0, indices.Length / (type == PrimitiveType.LineList ? 2 : 3));
         }
 
         public static Vector3 SphereToCart(this Vector3 v) {

@@ -24,6 +24,7 @@ namespace CGaG.Lab06 {
         Vector2 YRange = new Vector2(-15f, 15f);
         Vector2 Delta = new Vector2(0.25f, 0.25f);
         Tuple<VertexPositionColor[ ], short[ ]> ToDraw = null;
+        bool Faces = false;
 
         BasicEffect Effect;
         Vector3 SphereCameraPosition = new Vector3(64f, 315f, 45f);
@@ -109,8 +110,12 @@ namespace CGaG.Lab06 {
                 Func = 4;
                 ToDraw = null;
             }
+            if (keyboard.IsKeyDown(Keys.R) && keyboardPrev.IsKeyUp(Keys.R)) {
+                Faces = !Faces;
+                ToDraw = null;
+            }
             if (ToDraw == null) {
-                ToDraw = Utils.BuildFunction(AllFunctions[Func], XRange, YRange, Delta);
+                ToDraw = Utils.BuildFunction(AllFunctions[Func], XRange, YRange, Delta, Faces);
             }
 
             Effect.View = Matrix.CreateLookAt(SphereCameraPosition.SphereToCart( ), Vector3.Zero, Vector3.Up);
@@ -120,6 +125,8 @@ namespace CGaG.Lab06 {
             //    Effect.Projection = Matrix.CreateOrthographic(SphereCameraPosition.X, SphereCameraPosition.X * Graphics.PreferredBackBufferHeight / Graphics.PreferredBackBufferWidth, 0.1f, 100.0f);
             //}
             Effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45f), Graphics.PreferredBackBufferWidth / Graphics.PreferredBackBufferHeight, 0.1f, 1000.0f);
+
+            keyboardPrev = keyboard;
 
             base.Update(gameTime);
         }
@@ -133,7 +140,7 @@ namespace CGaG.Lab06 {
             Graphics.GraphicsDevice.RasterizerState = rasterizerState1;
             foreach (EffectPass pass in Effect.CurrentTechnique.Passes) {
                 pass.Apply( );
-                this.DrawLineList(ToDraw.Item1, ToDraw.Item2);
+                this.DrawList(ToDraw.Item1, ToDraw.Item2, (Faces ? PrimitiveType.TriangleList : PrimitiveType.LineList));
             }
 
             base.Draw(gameTime);
