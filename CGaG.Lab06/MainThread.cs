@@ -89,23 +89,23 @@ namespace CGaG.Lab06 {
                 (keyboard.IsKeyDown(Keys.Down) ? 1 : 0);
             Utils.Median(ref SphereCameraPosition.Z, -89f, 89f);
 
-            if (keyboard.IsKeyDown(Keys.D1)) {
+            if (keyboard.IsKeyDown(Keys.D1) && Func != 0) {
                 Func = 0;
                 ToDraw = null;
             }
-            if (keyboard.IsKeyDown(Keys.D2)) {
+            if (keyboard.IsKeyDown(Keys.D2) && Func != 1) {
                 Func = 1;
                 ToDraw = null;
             }
-            if (keyboard.IsKeyDown(Keys.D3)) {
+            if (keyboard.IsKeyDown(Keys.D3) && Func != 2) {
                 Func = 2;
                 ToDraw = null;
             }
-            if (keyboard.IsKeyDown(Keys.D4)) {
+            if (keyboard.IsKeyDown(Keys.D4) && Func != 3) {
                 Func = 3;
                 ToDraw = null;
             }
-            if (keyboard.IsKeyDown(Keys.D5)) {
+            if (keyboard.IsKeyDown(Keys.D5) && Func != 4) {
                 Func = 4;
                 ToDraw = null;
             }
