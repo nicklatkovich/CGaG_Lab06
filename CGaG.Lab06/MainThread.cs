@@ -12,11 +12,18 @@ namespace CGaG.Lab06 {
         KeyboardState keyboard;
         KeyboardState keyboardPrev = Keyboard.GetState( );
 
-        Func<float, float, float> Function = LabUtils.F5;
+        Func<float, float, float>[ ] AllFunctions = new Func<float, float, float>[ ] {
+            LabUtils.F1,
+            LabUtils.F2,
+            LabUtils.F3,
+            LabUtils.F4,
+            LabUtils.F5,
+        };
+        uint Func = 0;
         Vector2 XRange = new Vector2(-15f, 15f);
         Vector2 YRange = new Vector2(-15f, 15f);
         Vector2 Delta = new Vector2(0.25f, 0.25f);
-        Tuple<VertexPositionColor[ ], short[ ]> ToDraw;
+        Tuple<VertexPositionColor[ ], short[ ]> ToDraw = null;
 
         BasicEffect Effect;
         Vector3 SphereCameraPosition = new Vector3(64f, 315f, 45f);
@@ -45,7 +52,6 @@ namespace CGaG.Lab06 {
 
         protected override void Initialize( ) {
             // TODO: Add initialization logic
-            ToDraw = Utils.BuildFunction(Function, XRange, YRange, Delta);
 
             Effect = new BasicEffect(Graphics.GraphicsDevice);
             Effect.World = Matrix.Identity;
@@ -82,6 +88,30 @@ namespace CGaG.Lab06 {
                 (keyboard.IsKeyDown(Keys.Up) ? 1 : 0) -
                 (keyboard.IsKeyDown(Keys.Down) ? 1 : 0);
             Utils.Median(ref SphereCameraPosition.Z, -89f, 89f);
+
+            if (keyboard.IsKeyDown(Keys.D1)) {
+                Func = 0;
+                ToDraw = null;
+            }
+            if (keyboard.IsKeyDown(Keys.D2)) {
+                Func = 1;
+                ToDraw = null;
+            }
+            if (keyboard.IsKeyDown(Keys.D3)) {
+                Func = 2;
+                ToDraw = null;
+            }
+            if (keyboard.IsKeyDown(Keys.D4)) {
+                Func = 3;
+                ToDraw = null;
+            }
+            if (keyboard.IsKeyDown(Keys.D5)) {
+                Func = 4;
+                ToDraw = null;
+            }
+            if (ToDraw == null) {
+                ToDraw = Utils.BuildFunction(AllFunctions[Func], XRange, YRange, Delta);
+            }
 
             Effect.View = Matrix.CreateLookAt(SphereCameraPosition.SphereToCart( ), Vector3.Zero, Vector3.Up);
             //if (Graphics.PreferredBackBufferWidth > Graphics.PreferredBackBufferHeight) {
